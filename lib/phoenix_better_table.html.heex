@@ -1,0 +1,20 @@
+<table id={@id} class={@class}>
+  <thead>
+    <tr>
+      <th :for={header <- @meta.headers}>
+        <%= Map.get(header, :label, header.id) %>
+        <a :if={Map.get(header, :sort, true)} style="color: #000000" href="#" phx-click="sort" phx-value-header={header.id} phx-target={@myself}>
+          <%= sort_arrow(@sort, header.id) %>
+        </a>
+      </th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr :for={row <- @processed_rows}>
+      <td :for={header <- @meta.headers}>
+        <%= row[header.id] %>
+      </td>
+    </tr>
+  </tbody>
+</table>
