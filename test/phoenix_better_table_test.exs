@@ -14,6 +14,7 @@ defmodule PhoenixBetterTableTest do
 
   use ExUnit.Case, async: true
 
+  import Phoenix.Component, only: [sigil_H: 2]
   import Phoenix.LiveViewTest
   import LiveIsolatedComponent
   import PhoenixBetterTable.Support.TableHelpers, only: [assert_table_matches: 2]
@@ -127,6 +128,31 @@ defmodule PhoenixBetterTableTest do
     Bob          40
     Jane         25
     John         30
+    """)
+  end
+
+  test "renders cell using a function component, if :render is supplied for a column" do
+    {:ok, _view, html} =
+      live_isolated_component(PhoenixBetterTable, %{
+        meta: %{
+          headers: [
+            %{
+              id: :name,
+              render: fn assigns ->
+                ~H"""
+                <%= String.reverse(@value) %>
+                """
+              end
+            }
+          ]
+        },
+        rows: [%{name: "John"}, %{name: "Jane"}]
+      })
+
+    assert_table_matches(html, """
+    name
+    nhoJ
+    enaJ
     """)
   end
 end
