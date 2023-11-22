@@ -9,12 +9,15 @@ defmodule PhoenixBetterTable do
           * `:id` - the column's id, which will be used as the key for rendering and sorting
           * `:label` - the column's label (optional)
           * `:sort` - a boolean indicating whether the column is sortable (optional, default true)
+          * `:render` - an optional component that renders cells in the column
   * `:rows` - a list of maps, each representing a row in the table
   * `:sort` - a tuple containing the column id and the sort order (`:asc` or `:desc`) (optional)
   * `:class` - a string containing additional classes to be added to the table (optional)
   """
 
   use Phoenix.LiveComponent
+
+  import Phoenix.LiveView.TagEngine, only: [component: 3]
 
   @impl true
   def handle_event("sort", %{"header" => header_id}, %{assigns: %{rows: rows}} = socket) do

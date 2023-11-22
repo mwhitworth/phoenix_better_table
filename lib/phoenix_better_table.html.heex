@@ -13,7 +13,14 @@
   <tbody>
     <tr :for={row <- @processed_rows}>
       <td :for={header <- @meta.headers}>
-        <%= row[header.id] %>
+        <%= if Map.has_key?(header, :render) do %>
+          <%= component(
+            header.render,
+            [value: row[header.id]],
+            {__ENV__.module, __ENV__.function, __ENV__.file, __ENV__.line}) %>
+        <% else %>
+          <%= row[header.id] %>
+        <% end %>
       </td>
     </tr>
   </tbody>
