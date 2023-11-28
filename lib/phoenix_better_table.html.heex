@@ -1,7 +1,7 @@
 <table id={@id} class={@class}>
   <thead>
     <tr>
-      <th :for={header <- @meta.headers}>
+      <th :for={header <- @meta.headers} data-test-table-header={header.id}>
         <%= Map.get(header, :label, header.id) %>
         <a :if={Map.get(header, :sort, true)} style="color: #000000" href="#" phx-click="sort" phx-value-header={header.id} phx-target={@myself}>
           <%= sort_arrow(@sort, header.id) %>

@@ -155,4 +155,55 @@ defmodule PhoenixBetterTableTest do
     enaJ
     """)
   end
+
+  test "custom sorter can be passed to a header using :sort" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable, %{
+        meta: %{
+          headers: [
+            %{
+              id: :date,
+              sort: Date
+            },
+            %{
+              id: :name,
+              sort: &(String.length(&1) <= String.length(&2))
+            }
+          ]
+        },
+        rows: [%{date: ~D[2023-01-01], name: "X"}, %{date: ~D[2022-02-01], name: "Long"}]
+      })
+
+    # Sort date ascending
+    html =
+      view |> element("th[data-test-table-header='date'] > a[phx-click='sort']") |> render_click()
+
+    assert_table_matches(html, """
+                         date           name
+                         2022-02-01     Long
+                         2023-01-01     X
+    """)
+
+    # Sort date descending
+    html =
+      view |> element("th[data-test-table-header='date'] > a[phx-click='sort']") |> render_click()
+
+    assert_table_matches(html, """
+                         date           name
+                         2023-01-01     X
+                         2022-02-01     Long
+    """)
+
+    # Sort name descending
+    view |> element("th[data-test-table-header='name'] > a[phx-click='sort']") |> render_click()
+
+    html =
+      view |> element("th[data-test-table-header='name'] > a[phx-click='sort']") |> render_click()
+
+    assert_table_matches(html, """
+                         date           name
+                         2022-02-01     Long
+                         2023-01-01     X
+    """)
+  end
 end
