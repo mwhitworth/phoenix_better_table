@@ -17,6 +17,7 @@ defmodule PhoenixBetterTable.Support.TableHelpers do
     table
     |> Floki.find("tr")
     |> Enum.map(&parse_table_row/1)
+    |> Enum.reject(fn row -> Enum.all?(row, &(&1 == "")) end)
   end
 
   def parse_table_row(row) do

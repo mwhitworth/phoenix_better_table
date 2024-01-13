@@ -106,7 +106,7 @@ defmodule PhoenixBetterTableTest do
     """)
   end
 
-  test "reprocesses rows if assign is changed" do
+  test "reprocesses rows for sort if assign is changed" do
     {:ok, view, _html} =
       live_isolated_component(PhoenixBetterTable, %{
         meta: %{headers: [%{id: :name}, %{id: :age, sort: false}]},
@@ -204,6 +204,63 @@ defmodule PhoenixBetterTableTest do
                          date           name
                          2022-02-01     Long
                          2023-01-01     X
+    """)
+  end
+
+  test "supports filtering rows by per-column filters" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable, %{
+        meta: %{
+          headers: [
+            %{
+              id: :name
+            }
+          ]
+        },
+        rows: [%{name: "John"}, %{name: "Jane"}]
+      })
+
+    # Filter by name
+    view |> element("a[phx-click='filter_toggle']") |> render_click()
+    html = view |> element("input") |> render_keyup(%{"header" => "name", "value" => "JO"})
+
+    assert_table_matches(html, """
+                         name
+                         John
+    """)
+
+    # Switch off filter by clicking toggle again
+    html = view |> element("a[phx-click='filter_toggle']") |> render_click()
+
+    assert_table_matches(html, """
+                         name
+                         John
+                         Jane
+    """)
+  end
+
+  test "reprocesses rows for filter if assign is changed" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable, %{
+        meta: %{headers: [%{id: :name}]},
+        rows: [%{name: "John"}, %{name: "Jane"}]
+      })
+
+    view |> element("a[phx-click='filter_toggle']") |> render_click()
+    view |> element("input") |> render_keyup(%{"header" => "name", "value" => "Jo"})
+
+    live_assign(view, :rows, [
+      %{name: "John"},
+      %{name: "John-Paul"},
+      %{name: "Jane"}
+    ])
+
+    view
+    |> render()
+    |> assert_table_matches("""
+    name
+    John
+    John-Paul
     """)
   end
 end
