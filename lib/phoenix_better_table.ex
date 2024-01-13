@@ -8,7 +8,7 @@ defmodule PhoenixBetterTable do
       * `headers:` - a list of maps, each representing a header in the table:
           * `:id` - the column's id, which will be used as the key for rendering and sorting
           * `:label` - the column's label (optional)
-          * `:sort` - a boolean indicating whether the column is sortable (optional, default true)
+          * `:sort` - either a boolean indicating whether the column is sortable (optional, default true), or a compare/2 function that returns true if the first argument precedes or is in the same place as the second one.
           * `:render` - an optional component that renders cells in the column
   * `:rows` - a list of maps, each representing a row in the table
   * `:sort` - a tuple containing the column id and the sort order (`:asc` or `:desc`) (optional)
@@ -20,7 +20,11 @@ defmodule PhoenixBetterTable do
   import Phoenix.LiveView.TagEngine, only: [component: 3]
 
   @impl true
-  def handle_event("sort", %{"header" => header_id}, %{assigns: %{rows: rows}} = socket) do
+  def handle_event(
+        "sort",
+        %{"header" => header_id},
+        %{assigns: %{rows: rows, meta: meta}} = socket
+      ) do
     sort_column = String.to_existing_atom(header_id)
 
     socket =
@@ -31,7 +35,7 @@ defmodule PhoenixBetterTable do
         _ -> {sort_column, :asc}
       end)
 
-    {:noreply, assign(socket, :processed_rows, update_rows(rows, socket.assigns.sort))}
+    {:noreply, assign(socket, :processed_rows, update_rows(rows, socket.assigns.sort, meta))}
   end
 
   @impl true
@@ -53,7 +57,7 @@ defmodule PhoenixBetterTable do
       &assign(
         &1,
         :processed_rows,
-        update_rows(assigns.rows || socket.assigns.rows, &1.assigns.sort)
+        update_rows(assigns.rows || socket.assigns.rows, &1.assigns.sort, &1.assigns.meta)
       )
     )
     |> then(&{:ok, &1})
@@ -61,16 +65,26 @@ defmodule PhoenixBetterTable do
 
   #
 
-  defp update_rows(rows, nil) do
+  defp update_rows(rows, nil, _meta) do
     rows
   end
 
-  defp update_rows(rows, {column, order}) do
-    sorter = if order == :asc, do: &<=/2, else: &>=/2
+  defp update_rows(rows, {column, order}, %{headers: headers}) do
+    sorter = column_sorter(order, Enum.find(headers, &(&1.id == column)))
     Enum.sort_by(rows, &Map.get(&1, column), sorter)
   end
 
   #
+
+  defp column_sorter(order, %{sort: sort}) when is_function(sort) do
+    if order == :asc, do: sort, else: &sort.(&2, &1)
+  end
+
+  defp column_sorter(order, %{sort: module}) when is_atom(module) do
+    {order, module}
+  end
+
+  defp column_sorter(order, _), do: if(order == :asc, do: &<=/2, else: &>=/2)
 
   defp sort_arrow(nil, _column), do: "—"
   defp sort_arrow({column, order}, column) when order == :asc, do: "▲"
