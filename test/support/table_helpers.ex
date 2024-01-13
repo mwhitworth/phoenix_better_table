@@ -1,4 +1,6 @@
 defmodule PhoenixBetterTable.Support.TableHelpers do
+  @moduledoc false
+
   alias __MODULE__, as: TableHelpers
 
   defmacro assert_table_matches(actual, expected) do

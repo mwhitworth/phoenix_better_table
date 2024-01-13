@@ -13,7 +13,7 @@ defmodule PhoenixBetterTable.MixProject do
       package: package(),
       aliases: aliases(),
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: ["test.watch": :test, cover: :test],
+      preferred_cli_env: ["test.watch": :test, cover: :test, ci: :test],
       docs: [
         extras: ["README.md"]
       ]
@@ -54,6 +54,12 @@ defmodule PhoenixBetterTable.MixProject do
 
   def aliases do
     [
+      ci: [
+        "format --check-formatted",
+        "credo --strict",
+        "compile --warnings-as-errors --force",
+        "test"
+      ],
       cover: ["coveralls.html"]
     ]
   end
