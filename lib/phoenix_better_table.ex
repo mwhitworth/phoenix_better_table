@@ -23,7 +23,7 @@ defmodule PhoenixBetterTable do
   def handle_event(
         "sort",
         %{"header" => header_id},
-        %{assigns: %{rows: rows, meta: meta}} = socket
+        socket
       ) do
     sort_column = String.to_existing_atom(header_id)
 
@@ -35,7 +35,7 @@ defmodule PhoenixBetterTable do
         _ -> {sort_column, :asc}
       end)
 
-    {:noreply, assign(socket, :processed_rows, update_rows(rows, socket.assigns.sort, meta))}
+    {:noreply, process_rows(socket)}
   end
 
   @impl true
@@ -53,25 +53,23 @@ defmodule PhoenixBetterTable do
     |> assign(assigns)
     |> assign_new(:sort, fn -> nil end)
     |> assign_new(:class, fn -> "" end)
-    |> then(
-      &assign(
-        &1,
-        :processed_rows,
-        update_rows(assigns.rows || socket.assigns.rows, &1.assigns.sort, &1.assigns.meta)
-      )
-    )
+    |> process_rows()
     |> then(&{:ok, &1})
   end
 
   #
 
-  defp update_rows(rows, nil, _meta) do
-    rows
+  defp process_rows(%{assigns: %{rows: rows}} = socket) do
+    assign(socket, :processed_rows, rows |> sort_rows(socket))
   end
 
-  defp update_rows(rows, {column, order}, %{headers: headers}) do
+  defp sort_rows(rows, %{assigns: %{sort: {column, order}, meta: %{headers: headers}}}) do
     sorter = column_sorter(order, Enum.find(headers, &(&1.id == column)))
     Enum.sort_by(rows, &Map.get(&1, column), sorter)
+  end
+
+  defp sort_rows(rows, _socket) do
+    rows
   end
 
   #
