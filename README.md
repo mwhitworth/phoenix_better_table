@@ -28,7 +28,7 @@ The package can be installed by adding `phoenix_better_table` to your list of de
 ```elixir
 def deps do
   [
-    {:phoenix_better_table, "~> 0.1.0"}
+    {:phoenix_better_table, "~> 0.4.0"}
   ]
 end
 ```
