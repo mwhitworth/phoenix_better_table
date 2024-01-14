@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0 (2024-01-14)
+
+* basic filtering support (#10, #11)
+* basic CI setup (#9)
+* bump dependencies (#8)
+
 ## 0.3.0 (2024-01-13)
 
 * custom sorter function for column (#5)
