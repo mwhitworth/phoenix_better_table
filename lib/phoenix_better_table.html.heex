@@ -6,6 +6,15 @@
         <a :if={Map.get(header, :sort, true)} style="color: #000000" href="#" phx-click="sort" phx-value-header={header.id} phx-target={@myself}>
           <%= sort_arrow(@sort, header.id) %>
         </a>
+        &nbsp;
+        <a :if={Map.get(header, :filter, true)} style={if Map.has_key?(@filter, header.id), do: "color: #000000", else: "color: #808080"}  href="#" phx-click="filter_toggle" phx-value-header={header.id} phx-target={@myself}>
+          ⫧
+        </a>
+      </th>
+    </tr>
+    <tr :if={map_size(@filter) > 0}>
+      <th :for={header <- @meta.headers} data-test-table-header-filter={header.id}>
+        <input :if={Map.has_key?(@filter, header.id)} type="text" phx-keyup="filter_change" phx-value-header={header.id} phx-target={@myself} value={Map.fetch!(@filter, header.id)} />
       </th>
     </tr>
   </thead>

@@ -8,6 +8,7 @@ defmodule PhoenixBetterTable do
       * `headers:` - a list of maps, each representing a header in the table:
           * `:id` - the column's id, which will be used as the key for rendering and sorting
           * `:label` - the column's label (optional)
+          * `:filter` - a boolean indicating whether the column is filterable (optional, default true)
           * `:sort` - either a boolean indicating whether the column is sortable (optional, default true), or a compare/2 function that returns true if the first argument precedes or is in the same place as the second one.
           * `:render` - an optional component that renders cells in the column
   * `:rows` - a list of maps, each representing a row in the table
@@ -38,6 +39,37 @@ defmodule PhoenixBetterTable do
     {:noreply, process_rows(socket)}
   end
 
+  def handle_event(
+        "filter_toggle",
+        %{"header" => header_id},
+        socket
+      ) do
+    filter_column = String.to_existing_atom(header_id)
+
+    socket =
+      update(socket, :filter, fn
+        %{^filter_column => _} -> Map.delete(socket.assigns.filter, filter_column)
+        _ -> Map.put(socket.assigns.filter, filter_column, "")
+      end)
+
+    {:noreply, process_rows(socket)}
+  end
+
+  def handle_event(
+        "filter_change",
+        %{"header" => header_id, "value" => value},
+        socket
+      ) do
+    filter_column = String.to_existing_atom(header_id)
+
+    socket =
+      update(socket, :filter, fn
+        state -> Map.put(state, filter_column, value)
+      end)
+
+    {:noreply, process_rows(socket)}
+  end
+
   @impl true
   def mount(socket) do
     {:ok, socket}
@@ -52,6 +84,7 @@ defmodule PhoenixBetterTable do
     socket
     |> assign(assigns)
     |> assign_new(:sort, fn -> nil end)
+    |> assign_new(:filter, fn -> %{} end)
     |> assign_new(:class, fn -> "" end)
     |> process_rows()
     |> then(&{:ok, &1})
@@ -60,7 +93,27 @@ defmodule PhoenixBetterTable do
   #
 
   defp process_rows(%{assigns: %{rows: rows}} = socket) do
-    assign(socket, :processed_rows, rows |> sort_rows(socket))
+    assign(socket, :processed_rows, rows |> filter_rows(socket) |> sort_rows(socket))
+  end
+
+  defp filter_rows(rows, %{assigns: %{filter: nil}}) do
+    rows
+  end
+
+  defp filter_rows(rows, %{assigns: %{filter: filter}}) do
+    processed_filters =
+      Enum.map(filter, fn {column, value} ->
+        {column, value |> String.trim() |> String.downcase()}
+      end)
+
+    Enum.filter(rows, fn row ->
+      Enum.all?(processed_filters, fn {column, value} ->
+        String.contains?(
+          Map.get(row, column) |> to_string() |> String.downcase(),
+          value
+        )
+      end)
+    end)
   end
 
   defp sort_rows(rows, %{assigns: %{sort: {column, order}, meta: %{headers: headers}}}) do
