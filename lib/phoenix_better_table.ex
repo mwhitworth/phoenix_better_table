@@ -8,7 +8,7 @@ defmodule PhoenixBetterTable do
       * `headers:` - a list of maps, each representing a header in the table:
           * `:id` - the column's id, which will be used as the key for rendering and sorting
           * `:label` - the column's label (optional)
-          * `:filter` - a boolean indicating whether the column is filterable (optional, default true)
+          * `:filter` - a boolean indicating whether the column is filterable (optional, default true), or a 1-arity function that returns text to be filtered (default `to_string/1`)
           * `:sort` - either a boolean indicating whether the column is sortable (optional, default true), or a compare/2 function that returns true if the first argument precedes or is in the same place as the second one.
           * `:render` - an optional component that renders cells in the column
   * `:rows` - a list of maps, each representing a row in the table
@@ -100,7 +100,7 @@ defmodule PhoenixBetterTable do
     rows
   end
 
-  defp filter_rows(rows, %{assigns: %{filter: filter}}) do
+  defp filter_rows(rows, %{assigns: %{filter: filter, meta: %{headers: headers}}}) do
     processed_filters =
       Enum.map(filter, fn {column, value} ->
         {column, value |> String.trim() |> String.downcase()}
@@ -108,8 +108,10 @@ defmodule PhoenixBetterTable do
 
     Enum.filter(rows, fn row ->
       Enum.all?(processed_filters, fn {column, value} ->
+        filter_func = column_filter(Enum.find(headers, &(&1.id == column)))
+
         String.contains?(
-          Map.get(row, column) |> to_string() |> String.downcase(),
+          Map.get(row, column) |> filter_func.() |> String.downcase(),
           value
         )
       end)
@@ -136,6 +138,12 @@ defmodule PhoenixBetterTable do
   end
 
   defp column_sorter(order, _), do: if(order == :asc, do: &<=/2, else: &>=/2)
+
+  defp column_filter(%{filter: filter}) when is_function(filter, 1) do
+    filter
+  end
+
+  defp column_filter(_), do: &to_string/1
 
   defp sort_arrow(nil, _column), do: "—"
   defp sort_arrow({column, order}, column) when order == :asc, do: "▲"

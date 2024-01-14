@@ -263,4 +263,27 @@ defmodule PhoenixBetterTableTest do
     John-Paul
     """)
   end
+
+  test "custom filter text can be passed to a header using :filter" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable, %{
+        meta: %{
+          headers: [
+            %{
+              id: :date,
+              filter: fn _ -> "hello" end
+            }
+          ]
+        },
+        rows: [%{date: ~D[2023-01-01]}]
+      })
+
+    view |> element("a[phx-click='filter_toggle']") |> render_click()
+    html = view |> element("input") |> render_keyup(%{"header" => "date", "value" => "hello"})
+
+    assert_table_matches(html, """
+    date
+    2023-01-01
+    """)
+  end
 end
