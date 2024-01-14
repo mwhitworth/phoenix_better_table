@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1 (2024-01-14)
+
+* allow a filter function that generates text to be passed (#12)
+
 ## 0.4.0 (2024-01-14)
 
 * basic filtering support (#10, #11)
