@@ -1,6 +1,6 @@
 # PhoenixBetterTable
 
-PhoenixBetterTable is a Phoenix Live Component that presents a sortable table component given table metadata and rows.
+PhoenixBetterTable is a Phoenix Live Component that presents a filterable and sortable table component given table metadata and rows.
 
 ## Why?
 
@@ -9,6 +9,8 @@ It is designed to fill the space between `<table>` and fully featured data table
 ## Features
 
 - (optionally) sortable columns
+- (optionally) filterable columns
+- custom render functions for each column
 
 ## Usage
 

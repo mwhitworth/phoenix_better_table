@@ -8,6 +8,7 @@ defmodule PhoenixBetterTable do
       * `headers:` - a list of maps, each representing a header in the table:
           * `:id` - the column's id, which will be used as the key for rendering and sorting
           * `:label` - the column's label (optional)
+          * `:filter` - a boolean indicating whether the column is filterable (optional, default true)
           * `:sort` - either a boolean indicating whether the column is sortable (optional, default true), or a compare/2 function that returns true if the first argument precedes or is in the same place as the second one.
           * `:render` - an optional component that renders cells in the column
   * `:rows` - a list of maps, each representing a row in the table
