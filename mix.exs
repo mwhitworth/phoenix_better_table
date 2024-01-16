@@ -40,7 +40,7 @@ defmodule PhoenixBetterTable.MixProject do
       {:live_isolated_component, "~> 0.8.0", only: [:dev, :test]},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:phoenix_live_view, ">= 0.18.17"}
+      {:phoenix_live_view, ">= 0.18.0"}
     ]
   end
 
