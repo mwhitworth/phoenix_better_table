@@ -18,8 +18,6 @@ defmodule PhoenixBetterTable do
 
   use Phoenix.LiveComponent
 
-  import Phoenix.LiveView.TagEngine, only: [component: 3]
-
   @impl true
   def handle_event(
         "sort",
@@ -83,6 +81,7 @@ defmodule PhoenixBetterTable do
   def update(assigns, socket) do
     socket
     |> assign(assigns)
+    |> assign_new(:engine_module, fn -> engine_module() end)
     |> assign_new(:sort, fn -> nil end)
     |> assign_new(:filter, fn -> %{} end)
     |> assign_new(:class, fn -> "" end)
@@ -149,4 +148,13 @@ defmodule PhoenixBetterTable do
   defp sort_arrow({column, order}, column) when order == :asc, do: "▲"
   defp sort_arrow({column, order}, column) when order == :desc, do: "▼"
   defp sort_arrow(_, _), do: "—"
+
+  defp engine_module do
+    if Kernel.function_exported?(Phoenix.LiveView.TagEngine, :component, 3) do
+      # After LiveView 0.18.18
+      Phoenix.LiveView.TagEngine
+    else
+      Phoenix.LiveView.HTMLEngine
+    end
+  end
 end
