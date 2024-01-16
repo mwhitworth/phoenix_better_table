@@ -23,7 +23,7 @@
     <tr :for={row <- @processed_rows}>
       <td :for={header <- @meta.headers}>
         <%= if Map.has_key?(header, :render) do %>
-          <%= component(
+          <%= @engine_module.component(
             header.render,
             [value: row[header.id]],
             {__ENV__.module, __ENV__.function, __ENV__.file, __ENV__.line}) %>
