@@ -16,10 +16,15 @@ It is designed to fill the space between `<table>` and fully featured data table
 
 ```elixir
 <.live_component
+    id="123"
     module={PhoenixBetterTable}
     rows={[%{string: "Hello", number: 123}, %{string: "World", number: 456}]}
-    meta=%{headers: [%{id: :string, display_name: "String column", sort: false}, %{id: :number}]} />
+    meta={%{headers: [%{id: :string, display_name: "String column", sort: false}, %{id: :number}]}} />
 ```
+
+produces a table with two columns ("Hello" and "World"), one sortable column ("World), and filtering by column contents:
+
+<img align="center" src="./static/phoenix-better-table.gif" alt="PhoenixBetterTable example">
 
 ## Installation
 
