@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (2024-02-08)
+
+* support Phoenix LiveView from 0.18.0 (#15)
+
 ## 0.4.1 (2024-01-14)
 
 * allow a filter function that generates text to be passed (#12)
