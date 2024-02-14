@@ -18,8 +18,8 @@ It is designed to fill the space between `<table>` and fully featured data table
 <.live_component
     id="123"
     module={PhoenixBetterTable}
-    rows={[%{string: "Hello", number: 123}, %{string: "World", number: 456}]}
-    meta={%{headers: [%{id: :string, display_name: "String column", sort: false}, %{id: :number}]}} />
+    rows={[%{text: "Hello", number: 123}, %{text: "World", number: 456}]}
+    meta={%{headers: [%{id: :text, label: "string", sort: false}, %{id: :number}]}} />
 ```
 
 produces a table with two columns ("Hello" and "World"), one sortable column ("World), and filtering by column contents:
