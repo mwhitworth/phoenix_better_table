@@ -26,6 +26,27 @@ produces a table with two columns ("Hello" and "World"), one sortable column ("W
 
 <img align="center" src="./static/phoenix-better-table.gif" alt="PhoenixBetterTable example">
 
+### Custom render functions
+Suppose you have a column with an action button you want to render. You can define a custom render function for that column:
+
+```elixir
+  def render_button(assigns) do
+    ~H"""
+      <button><%= @value %></button>
+    """
+  end
+```
+
+and pass it to the `meta` map:
+
+```elixir
+<.live_component 
+  id="123" 
+  module={PhoenixBetterTable} 
+  rows={[%{action: "Hello", number: 123}, %{action: "World", number: 456}]} 
+  meta={%{headers: [%{id: :action, label: "Action", sort: false, render: &render_button/1}, %{id: :number}]}} />
+```
+
 ## Installation
 
 The package can be installed by adding `phoenix_better_table` to your list of dependencies in `mix.exs`:
