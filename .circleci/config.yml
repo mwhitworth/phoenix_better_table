@@ -1,8 +1,0 @@
-jobs:
-  build:
-    docker:
-      - image: cimg/elixir:1.16.0
-    steps:
-      - checkout
-      - run: mix deps.get
-      - run: mix ci
