@@ -10,6 +10,8 @@ It is designed to fill the space between `<table>` and fully featured data table
 
 - (optionally) sortable columns
 - (optionally) filterable columns
+- (optionally) add custom classes to the table header
+- (optionally) add custom classes to the table body
 - custom render functions for each column
 
 ## Usage

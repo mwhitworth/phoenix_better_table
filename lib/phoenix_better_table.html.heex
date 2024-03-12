@@ -1,5 +1,5 @@
 <table id={@id} class={@class}>
-  <thead>
+  <thead class={@header_class}>
     <tr>
       <th :for={header <- @meta.headers} data-test-table-header={header.id}>
         <%= Map.get(header, :label, header.id) %>
@@ -19,7 +19,7 @@
     </tr>
   </thead>
 
-  <tbody>
+  <tbody class={@body_class}>
     <tr :for={row <- @processed_rows}>
       <td :for={header <- @meta.headers}>
         <%= if Map.has_key?(header, :render) do %>

@@ -14,6 +14,8 @@ defmodule PhoenixBetterTable do
   * `:rows` - a list of maps, each representing a row in the table
   * `:sort` - a tuple containing the column id and the sort order (`:asc` or `:desc`) (optional)
   * `:class` - a string containing additional classes to be added to the table (optional)
+  * `:body_class` - a string containing additional classes to be added to the table body (optional)
+  * `:header_class` - a string containing additional classes to be added to the table header (optional)
   """
 
   use Phoenix.LiveComponent
@@ -85,6 +87,8 @@ defmodule PhoenixBetterTable do
     |> assign_new(:sort, fn -> nil end)
     |> assign_new(:filter, fn -> %{} end)
     |> assign_new(:class, fn -> "" end)
+    |> assign_new(:body_class, fn -> "" end)
+    |> assign_new(:header_class, fn -> "" end)
     |> process_rows()
     |> then(&{:ok, &1})
   end
