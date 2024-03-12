@@ -4,7 +4,7 @@ defmodule PhoenixBetterTable.MixProject do
   def project do
     [
       app: :phoenix_better_table,
-      version: "0.4.2",
+      version: "0.4.3",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,

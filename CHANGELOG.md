@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.3 (2024-03-12)
+
+* add styling options to table header and body (#26)
+* dependency upgrades (#23)
+* documentation updates (#17, #18)
+* migrate to Github Actions (#24)
+
 ## 0.4.2 (2024-02-08)
 
 * support Phoenix LiveView from 0.18.0 (#15)
