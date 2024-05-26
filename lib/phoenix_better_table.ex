@@ -95,7 +95,7 @@ defmodule PhoenixBetterTable do
 
   #
 
-  defp process_rows(%{assigns: %{rows: rows}} = socket) do
+  defp process_rows(%{assigns: %{rows: rows}} = socket) when is_list(rows) do
     assign(socket, :processed_rows, rows |> filter_rows(socket) |> sort_rows(socket))
   end
 
