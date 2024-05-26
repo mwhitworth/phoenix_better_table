@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.0 (2024-05-26)
+
+### New features
+
+* optional filter slot to customize filter display (#39)
+* optional sort slot to customize sort display (#40)
+
+### Fixes
+
+* ensure rows is a list before processing (#38)
+* dependency upgrades (#31, #32)
+* add FUNDING.yml (#33)
+
 ## 0.4.3 (2024-03-12)
 
 * add styling options to table header and body (#26)
