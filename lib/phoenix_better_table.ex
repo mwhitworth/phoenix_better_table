@@ -16,6 +16,11 @@ defmodule PhoenixBetterTable do
   * `:class` - a string containing additional classes to be added to the table (optional)
   * `:body_class` - a string containing additional classes to be added to the table body (optional)
   * `:header_class` - a string containing additional classes to be added to the table header (optional)
+
+  ## Slots
+
+  * `:filter_control` - an optional slot that takes a single argument, a tuple of `{active?, id, myself}`. The interactive element should
+  set `phx-click="filter_toggle"`, `phx-value-header={id}`, and `phx-target={myself}` for the event to be routed correctly.
   """
 
   use Phoenix.LiveComponent
@@ -86,6 +91,7 @@ defmodule PhoenixBetterTable do
     |> assign_new(:engine_module, fn -> engine_module() end)
     |> assign_new(:sort, fn -> nil end)
     |> assign_new(:filter, fn -> %{} end)
+    |> assign_new(:filter_control, fn -> nil end)
     |> assign_new(:class, fn -> "" end)
     |> assign_new(:body_class, fn -> "" end)
     |> assign_new(:header_class, fn -> "" end)
@@ -152,6 +158,17 @@ defmodule PhoenixBetterTable do
   defp sort_arrow({column, order}, column) when order == :asc, do: "▲"
   defp sort_arrow({column, order}, column) when order == :desc, do: "▼"
   defp sort_arrow(_, _), do: "—"
+
+  attr(:active?, :boolean, required: true)
+  attr(:rest, :global)
+
+  defp filter_control(assigns) do
+    ~H"""
+      <a style={if @active?, do: "color: #000000", else: "color: #808080"}  href="#" {@rest}>
+        ⫧
+      </a>
+    """
+  end
 
   defp engine_module do
     if Kernel.function_exported?(Phoenix.LiveView.TagEngine, :component, 3) do

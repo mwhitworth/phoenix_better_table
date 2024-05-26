@@ -7,9 +7,11 @@
           <%= sort_arrow(@sort, header.id) %>
         </a>
         &nbsp;
-        <a :if={Map.get(header, :filter, true)} style={if Map.has_key?(@filter, header.id), do: "color: #000000", else: "color: #808080"}  href="#" phx-click="filter_toggle" phx-value-header={header.id} phx-target={@myself}>
-          ⫧
-        </a>
+        <%= if @filter_control do %>
+          <%= render_slot(@filter_control, {Map.has_key?(@filter, header.id), header.id, @myself}) %>
+        <% else %>
+          <.filter_control active?={Map.has_key?(@filter, header.id)} phx-click="filter_toggle" phx-value-header={header.id} phx-target={@myself} />
+        <% end %>
       </th>
     </tr>
     <tr :if={map_size(@filter) > 0}>
