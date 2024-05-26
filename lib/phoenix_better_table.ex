@@ -21,6 +21,7 @@ defmodule PhoenixBetterTable do
 
   * `:filter_control` - an optional slot that takes a single argument, a tuple of `{active?, id, myself}`. The interactive element should
   set `phx-click="filter_toggle"`, `phx-value-header={id}`, and `phx-target={myself}` for the event to be routed correctly.
+  * `:sort_control` - an optional slot that takes a single argument, a tuple of `{direction, id, myself}`. See above.
   """
 
   use Phoenix.LiveComponent
@@ -91,6 +92,7 @@ defmodule PhoenixBetterTable do
     |> assign_new(:engine_module, fn -> engine_module() end)
     |> assign_new(:sort, fn -> nil end)
     |> assign_new(:filter, fn -> %{} end)
+    |> assign_new(:sort_control, fn -> nil end)
     |> assign_new(:filter_control, fn -> nil end)
     |> assign_new(:class, fn -> "" end)
     |> assign_new(:body_class, fn -> "" end)
@@ -154,10 +156,23 @@ defmodule PhoenixBetterTable do
 
   defp column_filter(_), do: &to_string/1
 
-  defp sort_arrow(nil, _column), do: "—"
-  defp sort_arrow({column, order}, column) when order == :asc, do: "▲"
-  defp sort_arrow({column, order}, column) when order == :desc, do: "▼"
-  defp sort_arrow(_, _), do: "—"
+  defp column_sort_order({column, order}, column), do: order
+  defp column_sort_order(_, _), do: nil
+
+  attr(:direction, :atom, required: true)
+  attr(:rest, :global)
+
+  defp sort_control(assigns) do
+    ~H"""
+      <a style="color: #000000" href="#" {@rest}>
+        <%= case @direction do
+          nil -> "—"
+          :asc -> "▲"
+          :desc -> "▼"
+        end %>
+      </a>
+    """
+  end
 
   attr(:active?, :boolean, required: true)
   attr(:rest, :global)

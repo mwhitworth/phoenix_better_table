@@ -287,6 +287,30 @@ defmodule PhoenixBetterTableTest do
     """)
   end
 
+  test "custom sort control can be passed as slot" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable,
+        assigns: %{
+          meta: %{headers: [%{id: :name}]},
+          rows: [%{name: "John"}, %{name: "Jane"}]
+        },
+        slots: %{
+          sort_control:
+            slot(let: {direction, id, myself}) do
+              ~H[<span phx-click="sort" phx-value-header={id} phx-target={myself}>Sort (<%= direction %>)</span>]
+            end
+        }
+      )
+
+    html = view |> element("span[phx-click='sort']") |> render_click()
+
+    assert_table_matches(html, """
+    name
+    Jane
+    John
+    """)
+  end
+
   test "custom filter control can be passed as a slot" do
     {:ok, view, _html} =
       live_isolated_component(PhoenixBetterTable,

@@ -3,9 +3,13 @@
     <tr>
       <th :for={header <- @meta.headers} data-test-table-header={header.id}>
         <%= Map.get(header, :label, header.id) %>
-        <a :if={Map.get(header, :sort, true)} style="color: #000000" href="#" phx-click="sort" phx-value-header={header.id} phx-target={@myself}>
-          <%= sort_arrow(@sort, header.id) %>
-        </a>
+        <%= if Map.get(header, :sort, true) do %>
+          <%= if @sort_control do %>
+            <%= render_slot(@sort_control, {column_sort_order(@sort, header.id), header.id, @myself}) %>
+          <% else %>
+            <.sort_control direction={column_sort_order(@sort, header.id)} phx-click="sort" phx-value-header={header.id} phx-target={@myself} />
+          <% end %>
+        <% end %>
         &nbsp;
         <%= if @filter_control do %>
           <%= render_slot(@filter_control, {Map.has_key?(@filter, header.id), header.id, @myself}) %>
