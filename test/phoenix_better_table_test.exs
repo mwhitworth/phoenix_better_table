@@ -286,4 +286,28 @@ defmodule PhoenixBetterTableTest do
     2023-01-01
     """)
   end
+
+  test "custom filter control can be passed as a slot" do
+    {:ok, view, _html} =
+      live_isolated_component(PhoenixBetterTable,
+        assigns: %{
+          meta: %{headers: [%{id: :name}]},
+          rows: [%{name: "John"}, %{name: "Jane"}]
+        },
+        slots: %{
+          filter_control:
+            slot(let: {_active?, id, myself}) do
+              ~H[<span phx-click="filter_toggle" phx-value-header={id} phx-target={myself}>Filter</span>]
+            end
+        }
+      )
+
+    view |> element("span[phx-click='filter_toggle']") |> render_click()
+    html = view |> element("input") |> render_keyup(%{"header" => "name", "value" => "jo"})
+
+    assert_table_matches(html, """
+    name
+    John
+    """)
+  end
 end
